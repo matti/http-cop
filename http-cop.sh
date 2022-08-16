@@ -26,11 +26,13 @@ echo "  path: $path"
 
 slug="$host-${path//\//-}"
 echo "slug: $slug"
+
+timeout=${2:-15}
 mkdir -p logs
 while true; do
   started_at=$SECONDS
   timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
-  if >"/tmp/http-cop.$slug.headers" 2>&1 curl -o "/tmp/http-cop.$slug.body" --verbose --max-time 15 -Lsf "$url"; then
+  if >"/tmp/http-cop.$slug.headers" 2>&1 curl -o "/tmp/http-cop.$slug.body" --verbose --max-time "$timeout" -Lsf "$url"; then
     took=$((SECONDS - started_at))
     if [[ "$took" -gt 5 ]]; then
       echo "$timestamp; ok; $took"
