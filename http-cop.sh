@@ -30,6 +30,9 @@ echo "slug: $slug"
 timeout=${2:-15}
 mkdir -p logs
 while true; do
+  rm "/tmp/http-cop.$slug.body" || true
+  rm "/tmp/http-cop.$slug.headers" || true
+
   started_at=$SECONDS
   timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
   if >"/tmp/http-cop.$slug.headers" 2>&1 curl -o "/tmp/http-cop.$slug.body" --verbose --max-time "$timeout" -Lsf "$url"; then
