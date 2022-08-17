@@ -28,10 +28,12 @@ slug="$host-${path//\//-}"
 echo "slug: $slug"
 
 timeout=${2:-15}
+delay=${3:-5}
+
 mkdir -p logs
 while true; do
-  rm "/tmp/http-cop.$slug.body" || true
-  rm "/tmp/http-cop.$slug.headers" || true
+  >/dev/null 2>&1 rm "/tmp/http-cop.$slug.body" || true
+  >/dev/null 2>&1 rm "/tmp/http-cop.$slug.headers" || true
 
   started_at=$SECONDS
   timestamp=$(date '+%Y-%m-%d_%H-%M-%S')
@@ -47,5 +49,11 @@ while true; do
     cp "/tmp/http-cop.$slug.headers" "logs/$slug.$timestamp.headers"
   fi
 
-  sleep 5
+  took=$((SECONDS - started_at))
+  remaining=$((delay - took))
+  if [[ "$remaining" -lt 1 ]]; then
+    sleep 1
+  else
+    sleep "$remaining"
+  fi
 done
